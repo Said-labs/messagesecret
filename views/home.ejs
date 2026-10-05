@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>SecretWall</title>
+ <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/script.js">
+  <link rel="icon" type="image/png" href="/public/uploads/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+</head>
+<body>
+
+<div id="loader">
+  <div class="envelope">
+    <div class="flap"></div>
+    
+  </div>
+</div>
+
+<aside class="iconbar">
+  <div class="iconbar__header">
+    <div class="iconbar__brand">
+      <svg class="iconbar__mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" width="20" height="20"><path d="M12 2 3 12l9 10 9-10z"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>
+      <span class="iconbar__brand-text">SA'ID AZIZ</span>
+    </div>
+    <button class="iconbar__toggle" aria-label="Buka/tutup navbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
+  </div>
+ 
+  <nav class="iconbar__nav">
+    <a class="iconbar__item active" data-page="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="iconbar__label">Home</span>
+      <span class="iconbar__tooltip">Home</span>
+    </a>
+
+    <a class="iconbar__item" data-page="analytics">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="21" y1="20" x2="21" y2="9"/></svg>
+      <span class="iconbar__label">Analytics</span>
+      <span class="iconbar__tooltip">Analytics</span>
+    </a>
+  </nav>
+ 
+  <div class="iconbar__bottom">
+    <button class="iconbar__item iconbar__item--menu" id="menuToggle" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      <span class="iconbar__label">Menu</span>
+      <span class="iconbar__tooltip">Menu</span>
+    </button>
+  </div>
+</aside>
+ 
+<!-- Popup menu: muncul di luar sidebar -->
+<div class="menu-popup" id="menuPopup">
+   <a class="menu-popup__item" href="https://mail.google.com/mail/?view=cm&fs=1&to=saidaziz.expert@gmail.com&su=Support%20SecretWall" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.9" y1="4.9" x2="9.2" y2="9.2"/><line x1="14.8" y1="14.8" x2="19.1" y2="19.1"/><line x1="14.8" y1="9.2" x2="19.1" y2="4.9"/><line x1="4.9" y1="19.1" x2="9.2" y2="14.8"/></svg>
+    Support
+  </a>
+  <button class="menu-popup__item" data-modal="about" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    About
+  </button>
+  <button class="menu-popup__item" data-modal="terms" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+    Terms
+  </button>
+  <div class="menu-popup__footer">SecretWall v1.0 &middot; Rilis 2026</div>
+</div>
+
+
+<script>
+// Ambil semua tombol yang punya data-modal
+const modalButtons = document.querySelectorAll('[data-modal]');
+const menuPopup = document.getElementById('menuPopup');
+
+// Event klik untuk buka modal
+modalButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modalId = 'modal-' + btn.dataset.modal; // contoh: modal-about
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('open'); // kasih class open biar muncul
+    }
+    menuPopup.classList.remove('open'); // tutup popup menu setelah pilih
+  });
+});
+
+// Tombol tutup di dalam modal
+document.querySelectorAll('[data-close-modal]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.modal-overlay').classList.remove('open');
+  });
+});
+
+// Tutup modal kalau klik area overlay (gelap di luar box)
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('open');
+    }
+  });
+});
+
+// Tutup modal dengan tombol Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(o => o.classList.remove('open'));
+    menuPopup.classList.remove('open');
+  }
+});
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const iconbar = document.querySelector(".iconbar");
+  const toggleBtn = document.querySelector(".iconbar__toggle");
+  const items = document.querySelectorAll(".iconbar__item");
+
+  // Satu tombol di header: buka kalau tertutup, tutup kalau terbuka
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      iconbar.classList.toggle("open");
+      localStorage.setItem(
+        "iconbar-open",
+        iconbar.classList.contains("open")
+      );
+    });
+  }
+
+  // Ingat state terakhir
+  if (localStorage.getItem("iconbar-open") === "true") {
+    iconbar.classList.add("open");
+  }
+
+  // Set item aktif saat diklik
+  items.forEach((item) => {
+    item.addEventListener("click", () => {
+      items.forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+    });
+  });
+});
+
+ if (menuToggle && menuPopup) {
+    menuToggle.addEventListener("click", (e) => {
+      e.stopPropagation()
+      menuPopup.classList.toggle("open")
+    })
+    document.addEventListener("click", (e) => {
+      if (!menuPopup.contains(e.target) && e.target !== menuToggle) {
+        menuPopup.classList.remove("open")
+      }
+    })
+  }
+
+   document.querySelectorAll(".social-links a").forEach((icon) => {
+    icon.addEventListener("click", () => {
+      icon.classList.toggle("icon-zoomed")
+    })
+  })
+
+
+</script>
+
+<main class="page">
+  <header>
+    <img src="/uploads/profile.png" alt="Profile" class="profile-pic">
+    <h1>Sa'id Abdul Aziz</h1>
+
+    <div class="profile-desc">
+      <pre><code class="language-cpp">
+```cpp
+
+
+#include < iostream >
+#include < string >
+using namespace std;
+
+int main() {
+    string nickname  = "Sa'id"; 
+    string tagline   = "Let's collaborate with me";
+    string introduction_1 = "I am Said Abdul Aziz, Informatics student at Telkom University.";
+    string introduction_2 = "This project is a secret message web where anyone can send me";
+    string introduction_3 = "anonymous messages such as feedback, questions, or suggestions.";
+    string background = "Telkom University - Informatics (2026–2030)";
+
+    cout << "╭─────────────────────────────────────────────────────────────────────────╮" << endl;
+    cout << "│                   PROFILE INFORMATION                                   |" << endl;
+    cout << "╰─────────────────────────────────────────────────────────────────────────╯" << endl;
+
+   
+    cout << "\n  ╭───────────────────────────╮" << endl;
+    cout << "  │ Nickname                  │" << endl;
+    cout << "  ╰───────────────────────────╯" << endl;
+    cout << "    " << nickname << "\n" << endl;
+
+    
+    cout << "  ╭───────────────────────────╮" << endl;
+    cout << "  │ Collaboration             │" << endl;
+    cout << "  ╰───────────────────────────╯" << endl;
+    cout << "    " << tagline << "\n" << endl;
+
+   
+    cout << "  ╭───────────────────────────╮" << endl;
+    cout << "  │ Introduction              │" << endl;
+    cout << "  ╰───────────────────────────╯" << endl;
+    cout << "         " << introduction_1 << endl;
+    cout << "    " << introduction_2 << endl;
+    cout << "    " << introduction_3 << "\n" << endl;
+
+ 
+    cout << "  ╭───────────────────────────╮" << endl;
+    cout << "  │ Background                │" << endl;
+    cout << "  ╰───────────────────────────╯" << endl;
+    cout << "    " << background << "\n" << endl;
+
+    cout << "╭────────────────────────────────────────────────────────────────────────╮" << endl;
+    cout << "╰────────────────────────────────────────────────────────────────────────╯" << endl;
+
+    return 0;
+}
+
+
+```
+      </code></pre>
+    </div>
+
+    <div class="social-links">
+      <a href="https://github.com/Said-labs" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="https://instagram.com/saidazizv" target="_blank"><i class="fab fa-instagram"></i></a>
+       <a href="https://linkedin.com/in/sa-id-6037033b8" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="https://www.google.com/maps/place/Bandung,+Kota+Bandung,+Jawa+Barat/@-6.8954979,107.4814193,11z/data=!4m6!3m5!1s0x2e68e6398252477f:0x146a1f93d3e815b2!8m2!3d-6.9174639!4d107.6191228" target="_blank">
+  <i class="fas fa-map-marker-alt"></i>
+</a>
+
+    </div>
+ 
+  </header>
+
+  <!-- Form kirim pesan rahasia -->
+  <form id="messageForm" class="form-send">
+    <div class="form-group">
+      <input type="text" name="author" placeholder="Name (Opsional)">
+    </div>
+    <div class="form-group">
+      <input type="text" name="text" placeholder="Write your message here...." required>
+    </div>
+    <div class="form-group">
+      <input type="file" name="file" accept="image/*,video/*,audio/*">
+    </div>
+    <button type="submit">Send</button>
+  </form>
+
+<form id="searchForm" class="form-search">
+  <input type="text" name="author" placeholder="Look for a name...">
+  <input type="text" name="pesan" placeholder="Look for the message hereee...">
+  <input type="date" name="date">
+  <button type="submit">Search message</button>
+</form>
+
+
+
+  <!-- Timeline pesan -->
+  <div id="messageTimeline"></div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+    const supabaseUrl = "https://rwinkckhijtbvfotqccl.supabase.co"
+    const supabaseKey = "EY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aW5rY2toaWp0YnZmb3RxY2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMDk0NTYsImV4cCI6MjEwNjc4NTQ1Nn0.NTWj3r5YTeiox5AT5YIB5z4hHKKdSkgm0OdYz6lecPc"
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const form = document.getElementById('messageForm')
+    const timeline = document.getElementById('messageTimeline')
+
+    // kirim pesan rahasia
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const formData = new FormData(form)
+      const author = formData.get('author')
+      const text = formData.get('text')
+      const file = formData.get('file')
+
+      let file_url = null
+      if (file && file.size > 0) {
+        const { data, error } = await supabase.storage
+          .from('uploads')
+          .upload(`messages/${Date.now()}_${file.name}`, file)
+              if (error) {
+  alert("Upload gagal: " + error.message)
+} else {
+  file_url = supabase.storage.from('uploads').getPublicUrl(data.path).data.publicUrl
+}
+      }
+
+
+
+
+      await supabase.from('messages').insert([{ author, text, file_url }])
+      loadMessages()
+    })
+
+    // ambil pesan + komentar + likes
+    async function loadMessages() {
+      const { data: messages } = await supabase
+        .from('messages')
+        .select('id, author, text, created_at, file_url, likes_count, comments(id, author, text, file_url, voice_url)')
+        .order('created_at', { ascending: false })
+
+      timeline.innerHTML = ''
+      messages.forEach(msg => {
+        timeline.innerHTML += `
+          <div class="card">
+            <div class="card-header">
+              <span class="author">${msg.author || "Anonim"}</span>
+              <span class="date">${new Date(msg.created_at).toLocaleString()}</span>
+            </div>
+            <div class="card-body"><p>${msg.text}</p></div>
+            ${msg.file_url ? renderFile(msg.file_url) : ""}
+            <div class="card-footer">
+              <button onclick="likeMessage('${msg.id}')">👍 Like (${msg.likes_count || 0})</button>
+              <button onclick="pinMessage('${msg.id}')">📌 Pin</button>
+              <button onclick="copyMessage('${msg.text}')">Copy</button>
+              <button onclick="shareMessage('${msg.text}')">🔗 Share</button>
+            </div>
+            <div class="comments">
+              ${(msg.comments || []).map(c => `
+                <p><strong>${c.author || "Anonim"}:</strong> ${c.text}</p>
+                ${c.file_url ? renderFile(c.file_url) : ""}
+                ${c.voice_url ? `<audio controls src="${c.voice_url}"></audio>` : ""}
+              `).join('')}
+              <form onsubmit="commentMessage(event, '${msg.id}')">
+                <input type="text" name="author" placeholder="Nama">
+                <input type="text" name="text" placeholder="Tulis komentar..." required>
+                <input type="file" name="file" accept="image/*,video/*,audio/*">
+                <button type="submit">Kirim</button>
+              </form>
+            </div>
+          </div>`
+      })
+    }
+
+    
+
+
+    const searchForm = document.getElementById('searchForm')
+
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const formData = new FormData(searchForm)
+  const author = formData.get('author')
+  const pesan = formData.get('pesan')
+  const date = formData.get('date')
+
+  let query = supabase.from('messages').select('*').order('created_at', { ascending: false })
+
+  if (author) {
+    query = query.ilike('author', `%${author}%`)   // cari berdasarkan nama
+  }
+  if (pesan) {
+    query = query.ilike('text', `%${pesan}%`)      // cari berdasarkan isi pesan
+  }
+  if (date) {
+    query = query.gte('created_at', date).lt('created_at', date + 'T23:59:59') // filter tanggal
+  }
+
+  const { data: messages } = await query
+  renderMessages(messages)
+})
+
+function renderMessages(messages) {
+  if (!messages || messages.length === 0) {
+    timeline.innerHTML = "<p>Belum ada pesan rahasia.</p>"
+    return
+  }
+  timeline.innerHTML = ''
+  messages.forEach(msg => {
+    timeline.innerHTML += `
+        <div class="card ${msg.is_pinned ? 'pinned' : ''}">
+        <div class="card-header">
+          <span class="author">${msg.author || "Anonim"}</span>
+          <span class="date">${new Date(msg.created_at).toLocaleString()}</span>
+        </div>
+        <div class="card-body"><p>${msg.text}</p></div>
+        ${msg.file_url ? renderFile(msg.file_url) : ""}
+        
+
+      </div>`
+     
+
+  })
+}
+
+
+    // helper render file
+    function renderFile(url) {
+      if (url.endsWith('.mp4') || url.endsWith('.webm')) return `<video controls src="${url}"></video>`
+      if (url.endsWith('.mp3') || url.endsWith('.wav')) return `<audio controls src="${url}"></audio>`
+      if (url.match(/\.(jpg|jpeg|png|gif)$/)) return `<img src="${url}" alt="File">`
+      return `<a href="${url}" target="_blank">Download File</a>`
+    }
+
+    // fungsi tambahan
+    window.likeMessage = async (id) => {
+      await supabase.rpc('increment_likes', { message_id: id })
+      loadMessages()
+    }
+
+    window.pinMessage = async (id) => {
+  await supabase.from('messages').update({ is_pinned: true }).eq('id', id)
+  loadMessages()
+}
+
+
+
+
+
+    window.commentMessage = async (e, id) => {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      const author = formData.get('author')
+      const text = formData.get('text')
+      const file = formData.get('file')
+
+      let file_url = null
+      if (file && file.size > 0) {
+        const { data, error } = await supabase.storage
+          .from('uploads')
+          .upload(`comments/${Date.now()}_${file.name}`, file)
+      
+      if (error) {
+  alert("Upload komentar gagal: " + error.message)
+} else {
+  file_url = supabase.storage.from('uploads').getPublicUrl(data.path).data.publicUrl
+}
+      }
+
+
+
+      await supabase.from('comments').insert([{ message_id: id, author, text, file_url }])
+      loadMessages()
+    }
+
+    window.copyMessage = (text) => {
+      navigator.clipboard.writeText(text).then(() => alert("Pesan berhasil dicopy!"))
+    }
+
+    window.shareMessage = (text) => {
+      alert("Bagikan pesan: " + text)
+    }
+
+    // realtime listener
+    supabase
+      .channel('messages-channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        loadMessages()
+      })
+      .subscribe()
+
+    loadMessages () 
+
+
+
+  </script>
+
+<script>
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    const content = document.getElementById("content");
+    setTimeout(() => {
+      loader.classList.add("hidden");
+      content.style.display = "block";
+    }, 2000);
+  });
+</script>
+
+</main>
+
+ 
+
+</body>
+</html>
+
