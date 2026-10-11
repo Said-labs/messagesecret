@@ -605,74 +605,187 @@ header h1 {
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ---------------------------------------------------------
-   Loader — animasi membuka amplop/pesan
+   LOADER — RESPONSIVE ENVELOPE / LETTER
 --------------------------------------------------------- */
+
 #loader {
   position: fixed;
   inset: 0;
-  background: #fef6ff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 22px;
+  gap: clamp(18px, 4vw, 28px);
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 42%, #ffffff 0%, transparent 55%),
+    linear-gradient(145deg, #fef6ff 0%, #f1edff 55%, #eaf3ff 100%);
   z-index: 9999;
-  transition: opacity 0.7s ease, visibility 0.7s ease;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.7s ease,
+    visibility 0.7s ease;
+  box-sizing: border-box;
 }
-#loader.hidden { opacity: 0; visibility: hidden; }
 
-#content { display: none; padding: 40px; text-align: center; }
+#loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 
+/* Konten utama — tetap dikendalikan JavaScript */
+#content {
+  display: none;
+  padding: clamp(16px, 4vw, 40px);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* AREA AMPLOP */
 .envelope {
   position: relative;
-  width: 200px;
-  height: 120px;
-  background: #fff;
+  isolation: isolate;
+  width: clamp(160px, 52vw, 240px);
+  aspect-ratio: 5 / 3;
+  flex-shrink: 0;
+  background: #fffdfd;
   border: 2px solid #a3bffa;
-  border-radius: 6px;
-  box-shadow: 0 10px 30px rgba(163, 191, 250, 0.4);
-  overflow: visible;
+  border-radius: 7px;
+  box-shadow:
+    0 16px 38px rgba(126, 145, 218, 0.20),
+    0 4px 12px rgba(163, 191, 250, 0.16);
   perspective: 800px;
-  animation: moveMail 3s ease-in-out infinite;
+  animation: envelopeFloat 3s ease-in-out 0s 2;
 }
 
-/* Penutup amplop — terbuka satu kali saja, seperti membuka pesan */
-.envelope .flap {
+/* KERTAS DI DALAM AMPLOP */
+.envelope::before {
+  content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-left: 100px solid transparent;
-  border-right: 100px solid transparent;
-  border-top: 60px solid #a3bffa;
-  transform-origin: top;
-  z-index: 2;
-  animation: flapOpen 2s ease-in-out 0.6s forwards;
+  z-index: 1;
+  left: 10%;
+  top: 9%;
+  width: 80%;
+  height: 78%;
+  border: 1px solid #e6def5;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 12px,
+      rgba(163, 191, 250, 0.28) 13px,
+      transparent 14px
+    ),
+    #fffdfd;
+  transform: translateY(0) scale(0.94);
+  transform-origin: center bottom;
+  animation: letterRise 1.1s cubic-bezier(.2, .75, .25, 1)
+    1.35s forwards;
 }
 
+/* BAGIAN DEPAN AMPLOP */
 .envelope::after {
   content: "";
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: 2;
+  border-radius: 5px;
   background: #fff;
-  border: 2px solid #a3bffa;
-  border-radius: 6px;
-  z-index: 1;
-  clip-path: polygon(0 45%, 50% 100%, 100% 45%, 100% 100%, 0 100%);
+  clip-path: polygon(
+    0 42%,
+    50% 100%,
+    100% 42%,
+    100% 100%,
+    0 100%
+  );
+  pointer-events: none;
 }
 
+/* PENUTUP AMPLOP */
+.envelope .flap {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 52%;
+  z-index: 3;
+  background: #a3bffa;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: 50% 0%;
+  backface-visibility: visible;
+  animation: flapOpen 1s cubic-bezier(.4, 0, .2, 1)
+    0.6s forwards;
+}
+
+/* ANIMASI PENUTUP TERBUKA */
 @keyframes flapOpen {
-  0%   { transform: rotateX(0deg); }
-  100% { transform: rotateX(-150deg); }
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(-160deg);
+  }
 }
 
-@keyframes moveMail {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-8px) rotate(-1deg); }
+/* ANIMASI KERTAS KELUAR */
+@keyframes letterRise {
+  0% {
+    transform: translateY(0) scale(0.94);
+  }
+  100% {
+    transform: translateY(-36%) scale(1);
+  }
+}
+
+/* GERAKAN AMPLOP YANG LEMBUT */
+@keyframes envelopeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* RESPONSIVE TABLET */
+@media (min-width: 600px) {
+  .envelope {
+    width: clamp(200px, 30vw, 260px);
+  }
+}
+
+/* RESPONSIVE HP KECIL */
+@media (max-width: 360px) {
+  #loader {
+    padding: 16px;
+    gap: 18px;
+  }
+
+  .envelope {
+    width: min(180px, 70vw);
+  }
+}
+
+/* PENGGUNA YANG MEMILIH ANIMASI MINIMAL */
+@media (prefers-reduced-motion: reduce) {
+  #loader,
+  .envelope,
+  .envelope .flap,
+  .envelope::before {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .envelope .flap {
+    transform: rotateX(-160deg);
+  }
+
+  .envelope::before {
+    transform: translateY(-36%) scale(1);
+  }
 }
 
 /* ---------------------------------------------------------
@@ -709,7 +822,9 @@ header h1 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
 
+/* ---------- Form tambahan ---------- */
 
 /* ---------- Form tambahan ---------- */
 .form-send textarea {
@@ -956,3 +1071,502 @@ body, .card, .doc-card, .stat-card, .chart-card, .list-card, .menu-popup, .info-
 .form-send, .form-search, .form-send input, .form-send textarea, .form-search input {
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
+
+
+
+:root {
+  --page-max: 1200px;
+  --content-padding: clamp(12px, 2.5vw, 32px);
+}
+
+html {
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+img,
+video,
+audio,
+iframe {
+  max-width: 100%;
+}
+
+.page,
+.page > *,
+.card,
+.comments,
+.form-group {
+  min-width: 0;
+}
+
+.page {
+  width: auto;
+  max-width: none;
+  margin-left: var(--w-collapsed);
+  padding: 0 var(--content-padding) 40px;
+  transition: margin-left 0.22s ease;
+}
+
+.iconbar.open ~ .page {
+  margin-left: var(--w-expanded);
+}
+
+/* Header tidak boleh melebar melebihi area konten */
+.page > header {
+  width: 100%;
+  max-width: none;
+  padding: clamp(20px, 4vw, 48px);
+}
+
+.page header::before {
+  left: calc(-1 * var(--w-collapsed));
+  right: 0;
+}
+
+.iconbar.open ~ .page header::before {
+  left: calc(-1 * var(--w-expanded));
+}
+
+/* Profil dan kode C++ */
+.profile-desc {
+  width: 100%;
+  max-width: 800px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.profile-desc pre {
+  width: max-content;
+  min-width: 100%;
+  max-width: none;
+  margin: 0;
+  white-space: pre;
+  overflow-wrap: normal;
+  tab-size: 4;
+}
+
+.profile-desc code {
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-size: clamp(11px, 0.85vw, 14px);
+}
+
+.profile-pic {
+  width: clamp(84px, 10vw, 130px);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.social-links a {
+  margin: 0;
+}
+
+/* Form */
+.form-send,
+.form-search {
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+  margin: clamp(18px, 3vw, 32px) auto;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-send input,
+.form-send textarea,
+.form-search input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.form-send textarea {
+  display: block;
+  min-height: 120px;
+  height: auto;
+  resize: vertical;
+}
+
+.form-send input[type="file"] {
+  height: auto;
+  min-height: 44px;
+  padding: 10px;
+}
+
+.char-count {
+  width: 100%;
+  margin: 0 0 12px;
+}
+
+/* Search form: dua kolom pada layar yang cukup luas */
+.form-search {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  text-align: left;
+}
+
+.form-search input {
+  margin-bottom: 0;
+}
+
+.form-search button {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 12px;
+}
+
+/* Timeline */
+#messageTimeline {
+  width: 100%;
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.card {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.card-header {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px 14px;
+}
+
+.card-header .author,
+.card-header .date {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-body,
+.card-body p,
+.comments {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-body p {
+  white-space: pre-wrap;
+}
+
+.card > img,
+.card > video,
+.card-body img,
+.card-body video,
+.comments img,
+.comments video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.card > video,
+.card-body video,
+.comments video {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #000;
+}
+
+.card audio,
+.comments audio {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Tombol aksi */
+.card-footer {
+  justify-content: flex-start;
+}
+
+.card-footer button {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Komentar */
+.comments form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.comments form input {
+  width: 100%;
+  min-width: 0;
+}
+
+.comments form button {
+  min-height: 42px;
+}
+
+/* Popup dan notifikasi */
+.menu-popup {
+  width: min(220px, calc(100vw - var(--w-expanded) - 24px));
+  max-width: calc(100vw - 20px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+
+.toast {
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  overflow-wrap: anywhere;
+}
+
+.admin-badge {
+  max-width: calc(100vw - 24px);
+  overflow-wrap: anywhere;
+}
+
+/* HP dan tablet kecil */
+@media (max-width: 640px) {
+  :root {
+    --w-collapsed: 0px;
+    --w-expanded: min(260px, 82vw);
+    --gap: 8px;
+  }
+
+  /*
+   * Sidebar menjadi panel overlay.
+   * Konten tidak ikut terdorong ketika sidebar dibuka.
+   */
+  .iconbar {
+    width: 56px;
+  }
+
+  .iconbar.open {
+    width: var(--w-expanded);
+    max-width: 82vw;
+  }
+
+  .page,
+  .iconbar.open ~ .page {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    padding: 0 12px 28px;
+  }
+
+  .page > header {
+    padding: 22px 12px;
+  }
+
+  .page header::before,
+  .iconbar.open ~ .page header::before {
+    left: -12px;
+    right: -12px;
+  }
+
+  .profile-desc {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  .profile-desc code {
+    font-size: 11px;
+  }
+
+  .social-links {
+    gap: 14px;
+  }
+
+  .social-links a {
+    font-size: 25px;
+  }
+
+  .form-send,
+  .form-search {
+    width: 100%;
+    padding: 14px;
+    margin-block: 18px;
+  }
+
+  .form-search {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #messageTimeline {
+    width: 100%;
+    margin-block: 20px;
+  }
+
+  .card {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .card-footer button {
+    width: 100%;
+    padding: 9px 6px;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .comments {
+    padding-left: 8px;
+  }
+
+  .menu-popup,
+  .iconbar.open ~ .menu-popup {
+    left: 64px;
+    width: min(220px, calc(100vw - 76px));
+  }
+
+  .iconbar.open ~ .menu-popup {
+    left: min(calc(var(--w-expanded) + 8px), 76vw);
+    width: min(220px, calc(100vw - min(var(--w-expanded) + 20px, 82vw)));
+  }
+
+  .toast {
+    bottom: 12px;
+  }
+
+  .profile-pic:hover {
+    transform: none;
+  }
+
+  .social-links a:hover,
+  .social-links a.icon-zoomed {
+    transform: none;
+  }
+}
+
+/* HP sangat kecil */
+@media (max-width: 360px) {
+  .page,
+  .iconbar.open ~ .page {
+    padding-inline: 10px;
+  }
+
+  .page > header {
+    padding-inline: 8px;
+  }
+
+  .card-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .iconbar__header {
+    padding-inline: 8px;
+  }
+
+  .iconbar__toggle {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Laptop dan desktop */
+@media (min-width: 641px) {
+  .page > header {
+    max-width: var(--page-max);
+    margin-inline: auto;
+  }
+
+  .form-send,
+  .form-search,
+  #messageTimeline {
+    max-width: min(900px, 100%);
+  }
+}
+
+/* Monitor ultrawide dan TV */
+@media (min-width: 1920px) {
+  :root {
+    --page-max: 1600px;
+  }
+
+  .page {
+    padding-inline: clamp(32px, 3vw, 64px);
+  }
+
+  .page > header {
+    padding: clamp(40px, 3vw, 72px);
+  }
+
+  .profile-desc {
+    max-width: 1000px;
+  }
+
+  .profile-desc code {
+    font-size: 16px;
+  }
+
+  .form-send,
+  .form-search,
+  #messageTimeline {
+    max-width: 1100px;
+  }
+
+  .card {
+    padding: clamp(20px, 1.5vw, 32px);
+  }
+}
+
+/* TV 4K dan layar lebih lebar */
+@media (min-width: 3000px) {
+  :root {
+    --page-max: 2000px;
+  }
+
+  .page {
+    padding-inline: 64px;
+  }
+
+  .page h1 {
+    font-size: clamp(36px, 1.8vw, 64px);
+  }
+
+  .profile-desc code {
+    font-size: 18px;
+  }
+
+  .form-send,
+  .form-search,
+  #messageTimeline {
+    max-width: 1400px;
+  }
+
+  .card-footer button,
+  .comments form button {
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
+
