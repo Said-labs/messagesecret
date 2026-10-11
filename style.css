@@ -709,4 +709,71 @@ header h1 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+
+/* ---------- Form tambahan ---------- */
+.form-send textarea {
+  width: 90%; min-height: 100px; padding: 12px;
+  border: 2px solid #a3bffa; border-radius: 6px; background: #f9f9f9; color: #444;
+  font-family: var(--font-body); margin-bottom: 12px; resize: vertical;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
+.form-send textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(102,126,234,.2); }
+.form-send button:disabled, .form-search button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+.char-count { font-size: 12px; color: #999; text-align: right; width: 90%; margin: -6px auto 10px; }
+.form-search .btn-reset { background: transparent; border: 2px solid #a3bffa; color: var(--accent); margin-left: 6px; }
+@media (max-width: 640px) { .form-send textarea { width: 100%; } .char-count { width: 100%; } }
+
+/* ---------- Kartu & aksi ---------- */
+.card-body p { white-space: pre-wrap; }
+.card-footer button.danger { border-color: #f1a1a1; color: #d9534f; }
+.card-footer button.danger:hover { background: #d9534f; border-color: #d9534f; color: #fff; }
+.card-footer button:disabled { opacity: .5; cursor: not-allowed; }
+.comments .c-del { border: none; background: transparent; color: #d9534f; cursor: pointer; font-size: 12px; margin-left: 6px; }
+.load-more {
+  display: block; margin: 0 auto 40px; padding: 12px 26px;
+  background: linear-gradient(90deg, #a1c4fd, #c2e9fb); color: #111; border: none;
+  border-radius: 6px; cursor: pointer; font-weight: bold; font-family: var(--font-body);
+}
+.empty-state { text-align: center; color: #888; padding: 30px 0; }
+.admin-badge {
+  position: fixed; top: 12px; right: 12px; z-index: 120; display: none;
+  background: #1c1e24; color: #ffd166; font-size: 12px; font-weight: 600;
+  padding: 6px 12px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+
+/* ---------- MODE GELAP ---------- */
+[data-theme="dark"] { --card-bg: linear-gradient(145deg, #232634, #1c1e28); color-scheme: dark; }
+[data-theme="dark"] body { background: #12141b; color: #e6e8ef; animation: none; }
+[data-theme="dark"] header::before { background: linear-gradient(90deg, #1b1f2e, #232a40); border-bottom-color: #3a4366; }
+[data-theme="dark"] header p { color: #aab0c5 !important; }
+[data-theme="dark"] .profile-desc { color: #cfd3e0; }
+[data-theme="dark"] .card-body p,
+[data-theme="dark"] .comments p,
+[data-theme="dark"] .doc-card p,
+[data-theme="dark"] .doc-card li,
+[data-theme="dark"] .info-modal p,
+[data-theme="dark"] .rank li { color: #cfd3e0; }
+[data-theme="dark"] .card-header .date,
+[data-theme="dark"] .stat-card .label,
+[data-theme="dark"] .stat-card .hint,
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .state-msg,
+[data-theme="dark"] .updated,
+[data-theme="dark"] .doc-meta { color: #9aa0b5; }
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .form-send input,
+[data-theme="dark"] .form-send textarea,
+[data-theme="dark"] .form-search input,
+[data-theme="dark"] .comments form input { background: #12141b; color: #e6e8ef; border-color: #3a4366; }
+[data-theme="dark"] .menu-popup,
+[data-theme="dark"] .info-modal { background: #232634; }
+[data-theme="dark"] .menu-popup__item { color: #e6e8ef; }
+[data-theme="dark"] .menu-popup__item:hover { background: #2c3150; }
+[data-theme="dark"] .menu-popup__footer { border-top-color: #3a4366; color: #8a90a6; }
+[data-theme="dark"] .feature-item { background: #1c1e28; border-color: #3a4366; }
+[data-theme="dark"] .feature-item span { color: #aab0c5; }
+[data-theme="dark"] #loader { background: #12141b; }
+[data-theme="dark"] .envelope { background: #232634; }
+[data-theme="dark"] .card.pinned::before { color: #ffd166; }
