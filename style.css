@@ -757,17 +757,57 @@ header h1 {
   }
 }
 
-/* RESPONSIVE HP KECIL */
-@media (max-width: 360px) {
+
+/* FIX AMPLOP DI HP */
+@media (max-width: 600px) {
   #loader {
-    padding: 16px;
-    gap: 18px;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
   }
 
   .envelope {
-    width: min(180px, 70vw);
+    width: min(200px, 62vw);
+    height: auto;
+    aspect-ratio: 5 / 3;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: visible;
+    perspective: 700px;
+  }
+
+  .envelope .flap {
+    inset: 0 0 auto;
+    width: 100%;
+    height: 52%;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 0%;
+    box-sizing: border-box;
+  }
+
+  .envelope::after {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    clip-path: polygon(
+      0 42%,
+      50% 100%,
+      100% 42%,
+      100% 100%,
+      0 100%
+    );
   }
 }
+
 
 /* PENGGUNA YANG MEMILIH ANIMASI MINIMAL */
 @media (prefers-reduced-motion: reduce) {
