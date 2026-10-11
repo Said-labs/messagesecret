@@ -194,8 +194,8 @@ Didistribusikan di bawah lisensi **ISC**.
 Informatics Student, Telkom University (2026–2030)
 
 [![GitHub](https://img.shields.io/badge/GitHub-Said--labs-181717?style=flat-square&logo=github)](https://github.com/Said-labs)
-[![Instagram](https://img.shields.io/badge/Instagram-saidazizv-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://instagram.com/saidazizv)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Sa'id-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/sa-id-6037033b8)
+[![Instagram](https://img.shields.io/badge/Instagram-saidazizzy-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://instagram.com/saidazizzy)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Sa'id-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/said-abdul-aziz)
 [![Email](https://img.shields.io/badge/Email-saidaziz.expert%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:saidaziz.expert@gmail.com)
 
 <div align="center">
