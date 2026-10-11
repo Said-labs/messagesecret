@@ -1,0 +1,182 @@
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>SecretWall — Admin</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/png" href="/uploads/logo.png">
+  <script src="/theme.js"></script>
+  <style>
+    .admin { max-width: 900px; width: 94%; margin: 30px auto; }
+    .box { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 0 15px rgba(163,191,250,.25); }
+    .box h3 { margin: 0 0 12px; font-family: var(--font-display); color: var(--accent-2); }
+    .login-form { display: grid; gap: 10px; max-width: 360px; margin: 0 auto; }
+    .login-form input { padding: 12px; border: 2px solid #a3bffa; border-radius: 6px; font-family: var(--font-body); }
+    .btn { padding: 9px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: linear-gradient(90deg, #a1c4fd, #c2e9fb); color: #111; font-family: var(--font-body); }
+    .btn.danger { background: #d9534f; color: #fff; }
+    .btn.ghost { background: transparent; border: 2px solid #a3bffa; color: var(--accent); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .stat { text-align: center; padding: 14px; border-radius: 10px; background: rgba(163,191,250,.15); }
+    .stat b { display: block; font-size: 1.7rem; color: var(--accent); }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tabs button.active { background: var(--accent); color: #fff; }
+    .item { border-bottom: 1px solid rgba(163,191,250,.3); padding: 12px 0; }
+    .item:last-child { border-bottom: none; }
+    .item .meta { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .item .txt { color: #444; white-space: pre-wrap; word-break: break-word; margin-bottom: 8px; }
+    .item .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { background: #d9534f; color: #fff; border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: bold; }
+    .err { color: #d9534f; text-align: center; font-size: 14px; min-height: 18px; }
+    [data-theme="dark"] .item .txt { color: #cfd3e0; }
+  </style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <h1>Admin SecretWall</h1>
+    <p style="margin:0;color:#667;"><a href="/" style="color:var(--accent)">← Kembali ke Home</a></p>
+  </header>
+
+  <section class="admin">
+    <div class="box" id="loginBox">
+      <h3>Masuk Admin</h3>
+      <form class="login-form" id="loginForm">
+        <input type="email" name="email" placeholder="Email" required autocomplete="username">
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+        <button class="btn" type="submit">Masuk</button>
+        <div class="err" id="loginErr"></div>
+      </form>
+    </div>
+
+    <div id="panel" style="display:none;">
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="margin:0;">Ringkasan</h3>
+          <button class="btn ghost" id="logoutBtn">Keluar</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="sMsg">–</b>Pesan</div>
+          <div class="stat"><b id="sCmt">–</b>Komentar</div>
+          <div class="stat"><b id="sRep">–</b>Laporan</div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="tabs">
+          <button class="btn active" data-tab="reports">🚩 Laporan</button>
+          <button class="btn" data-tab="latest">📩 Pesan Terbaru</button>
+        </div>
+        <div id="list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+  const supabase = createClient(
+    "https://rwinkckhijtbvfotqccl.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aW5rY2toaWp0YnZmb3RxY2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMDk0NTYsImV4cCI6MjEwNjc4NTQ1Nn0.NTWj3r5YTeiox5AT5YIB5z4hHKKdSkgm0OdYz6lecPc"
+  )
+  const $ = (id) => document.getElementById(id)
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+  let tab = 'reports'
+
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return showLogin()
+    const { data: ok } = await supabase.rpc('is_admin')
+    if (ok !== true) { $('loginErr').textContent = 'Akun ini bukan admin.'; await supabase.auth.signOut(); return showLogin() }
+    $('loginBox').style.display = 'none'; $('panel').style.display = 'block'
+    loadStats(); loadList()
+  }
+  function showLogin() { $('loginBox').style.display = 'block'; $('panel').style.display = 'none' }
+
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    $('loginErr').textContent = ''
+    const fd = new FormData(e.target)
+    const { error } = await supabase.auth.signInWithPassword({ email: fd.get('email'), password: fd.get('password') })
+    if (error) { $('loginErr').textContent = 'Login gagal: ' + error.message; return }
+    init()
+  })
+  $('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload() })
+
+  async function count(table) {
+    const { count } = await supabase.from(table).select('*', { count: 'exact', head: true })
+    return count ?? 0
+  }
+  async function loadStats() {
+    const [m, c, r] = await Promise.all([count('messages'), count('comments'), count('reports')])
+    $('sMsg').textContent = m; $('sCmt').textContent = c; $('sRep').textContent = r
+  }
+
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    tab = b.dataset.tab
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('active', x === b))
+    loadList()
+  }))
+
+  async function loadList() {
+    $('list').innerHTML = '<p class="empty-state">Memuat…</p>'
+    if (tab === 'reports') {
+      const { data, error } = await supabase.from('reports')
+        .select('id, reason, created_at, message_id, messages(id, author, text, created_at)')
+        .order('created_at', { ascending: false })
+      if (error) { $('list').innerHTML = `<p class="err">${esc(error.message)}</p>`; return }
+      const map = new Map()
+      data.forEach(r => {
+        if (!r.messages) return
+        const g = map.get(r.message_id) || { msg: r.messages, count: 0, reasons: [] }
+        g.count++; if (r.reason) g.reasons.push(r.reason)
+        map.set(r.message_id, g)
+      })
+      const rows = [...map.values()].sort((a, b) => b.count - a.count)
+      $('list').innerHTML = rows.length ? rows.map(g => `
+        <div class="item">
+          <div class="meta"><span class="badge">${g.count} laporan</span> · ${esc(g.msg.author || 'Anonim')} · ${new Date(g.msg.created_at).toLocaleString('id-ID')}</div>
+          <div class="txt">${esc(g.msg.text)}</div>
+          ${g.reasons.length ? `<div class="meta">Alasan: ${g.reasons.map(esc).join(' | ')}</div>` : ''}
+          <div class="acts">
+            <button class="btn danger" data-act="del" data-id="${g.msg.id}">Hapus pesan</button>
+            <button class="btn ghost" data-act="dismiss" data-id="${g.msg.id}">Abaikan laporan</button>
+          </div>
+        </div>`).join('') : '<p class="empty-state">Tidak ada laporan 🎉</p>'
+    } else {
+      const { data, error } = await supabase.from('messages')
+        .select('id, author, text, created_at, is_pinned')
+        .order('created_at', { ascending: false }).limit(50)
+      if (error) { $('list').innerHTML = `<p class="err">${esc(error.message)}</p>`; return }
+      $('list').innerHTML = data.length ? data.map(m => `
+        <div class="item">
+          <div class="meta">${esc(m.author || 'Anonim')} · ${new Date(m.created_at).toLocaleString('id-ID')} ${m.is_pinned ? '· 📌' : ''}</div>
+          <div class="txt">${esc(m.text)}</div>
+          <div class="acts">
+            <button class="btn ghost" data-act="pin" data-id="${m.id}" data-pinned="${m.is_pinned ? 1 : 0}">${m.is_pinned ? 'Lepas Pin' : 'Pin'}</button>
+            <button class="btn danger" data-act="del" data-id="${m.id}">Hapus</button>
+          </div>
+        </div>`).join('') : '<p class="empty-state">Belum ada pesan.</p>'
+    }
+  }
+
+  $('list').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-act]'); if (!b) return
+    const id = b.dataset.id; let res
+    if (b.dataset.act === 'del') {
+      if (!confirm('Hapus pesan ini beserta komentarnya?')) return
+      res = await supabase.from('messages').delete().eq('id', id)
+    } else if (b.dataset.act === 'dismiss') {
+      res = await supabase.from('reports').delete().eq('message_id', id)
+    } else if (b.dataset.act === 'pin') {
+      res = await supabase.from('messages').update({ is_pinned: b.dataset.pinned !== '1' }).eq('id', id)
+    }
+    if (res?.error) return alert(res.error.message)
+    loadStats(); loadList()
+  })
+
+  init()
+</script>
+</body>
+</html>
